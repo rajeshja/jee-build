@@ -1,0 +1,306 @@
+<project name="Shopping Cart" default="build-ear" basedir=".">
+
+	<!--  This is a basic build script, only the minimums here -->
+
+	<!-- Tell ant to use my environment variables -->
+	<property environment="env"/>
+
+	<property file="./build.properties"/>
+	<property file="./${app-server}.properties"/>
+
+	<!-- Setting up the project classpath -->
+	<path id="project.class.path">
+		<fileset dir="${lib.web.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${lib.app.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${lib.build.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement path="${java.src.dir}" />
+	</path>
+
+	<!-- Remove the application from the container -->
+	<target name="cleanWebApp">
+		<delete dir="${deploy.ear.path}" includeEmptyDirs="true" />
+	</target>
+
+	<!-- Clean the build environment. (Does not undeploy the application) -->
+	<target name="clean" depends="cleanClasses">
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${dist.dir}"/>
+		</delete>
+	</target>
+
+	<target name="undeploy">
+		<delete includeEmptyDirs="true">
+			<fileset dir="${deploy.ear.path}"/>
+		</delete>
+	</target>
+
+	<target name="undeploy.war">
+		<delete file="${deploy.war.path}"/>
+	</target>
+
+	<target name="undeploy.ear">
+		<delete file="${deploy.ear.path}"/>
+	</target>
+
+	<!-- Initial preparations -->
+	<target name="prep">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.app.dir}"/>
+		<mkdir dir="${build.app.dir}/META-INF"/>
+		<mkdir dir="${build.app-lib.dir}"/>
+		<mkdir dir="${build.ejb-jar.dir}"/>
+		<mkdir dir="${build.ejb-jar.dir}/META-INF"/>
+		<mkdir dir="${build.web.dir}"/>
+		<mkdir dir="${build.web.dir}/WEB-INF"/>
+		<mkdir dir="${build.web.dir}/WEB-INF/classes"/>
+		<mkdir dir="${build.web.dir}/META-INF"/>
+		<!-- mkdir dir="${build.web-lib.dir}"/> -->
+		<mkdir dir="${build.web-jar.dir}"/>
+		<mkdir dir="${build.web-jar.dir}/META-INF"/>
+		<mkdir dir="${java.compile.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+
+	<!-- Compile java code -->
+	<target name="compile" depends="prep">
+		<javac srcdir="${java.src.dir}"
+					 destdir="${java.compile.dir}"
+					 debug="on"
+					 deprecation="on"
+					 target="${java.compile.target}">
+			<include name="**/*.java"/>
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+	<!-- Delete compiled classes -->
+	<target name="cleanClasses">
+		<delete dir="${java.compile.dir}" />
+	</target>
+
+	<target name="prep-ear">
+		<!-- Copy all jars required on EAR classpath -->
+		<copy todir="${build.app-lib.dir}">
+			<fileset dir="${lib.app.dir}"/>
+		</copy>
+		<!-- Copy EAR level resources-->
+		<copy todir="${build.app.dir}">
+			<fileset dir="${config.resources.dir}">
+				<include name="${config.app.files.include}" />
+				<exclude name="${config.app.files.exclude}" />
+				<exclude name="${config.ejb-jar.files}" />
+			</fileset>
+		</copy>
+		<manifest file="${build.app.dir}/META-INF/MANIFEST.MF"/>
+		<replace dir="${build.app.dir}" includes="**" 
+						 token="@project-name@" value="${project.name}"/>
+	</target>
+
+	<!-- Create the exploded War directory  -->
+	<target name="build-war" depends="compile, prep, build-web-jar">
+		<!-- Copy JSPs, and web files -->
+		<copy todir="${build.web.dir}">
+			<fileset dir="${web.src.dir}"/>
+		</copy>
+		<!-- Copy WEB-INF files -->
+		<copy todir="${build.web.dir}/WEB-INF">
+			<fileset dir="${config.web-inf.dir}"/>
+		</copy>
+		<!-- Copy all jars required on WAR classpath -->
+		<copy todir="${build.web-lib.dir}">
+			<fileset dir="${lib.web.dir}"/>
+		</copy>
+		<copy todir="${build.web.dir}/WEB-INF/classes">
+			<fileset dir="${build.web-jar.dir}"/>
+			<fileset dir="${config.resources.dir}">
+				<include name="${config.web.files.include}" />
+				<exclude name="${config.web.files.exclude}" />
+			</fileset>
+		</copy>
+		<antcall target="build-war.${app-server}">
+		</antcall>
+		<replace dir="${build.web.dir}" includes="**" 
+						 token="@project-name@" value="${project.name}"/>
+	</target>
+
+	<target name="build-web-jar" depends="compile, prep">
+		<copy todir="${build.web-jar.dir}">
+			<!-- Copy all class files -->
+			<fileset dir="${java.compile.dir}">
+				<exclude name="${java.ejb-jar.include}"/>
+			</fileset>
+			<!-- Copy all properties files required on classpath -->
+			<fileset dir="${config.resources.dir}">
+				<include name="${config.resources.web.files}" />
+			</fileset>
+		</copy>
+		<manifest file="${build.web-jar.dir}/META-INF/MANIFEST.MF"/>
+	</target>
+
+	<target name="build-ejb-jar" depends="compile, prep">
+		<!-- Copy all files required in EJB JAR -->
+		<copy todir="${build.ejb-jar.dir}">
+			<fileset dir="${java.compile.dir}">
+				<include name="${java.ejb-jar.include}" />
+			</fileset>
+		</copy>
+		<manifest file="${build.ejb-jar.dir}/META-INF/MANIFEST.MF"/>
+		<antcall target="build-ejb-jar.${app-server}">
+		</antcall>
+	</target>
+
+	<!-- Create the exploded EAR directory -->
+	<target name="build-ear" depends="build-war,prep-ear">
+		<!-- Copy exploded WAR -->
+		<copy todir="${build.app.dir}/${app.web.name}">
+			<fileset dir="${build.web.dir}"/>
+		</copy>
+		<antcall target="build-ear.${app-server}">
+		</antcall>
+		<replace dir="${build.app.dir}" includes="**" 
+						 token="@project-name@" value="${project.name}"/>
+	</target>
+
+	<!-- Create the exploded EAR directory -->
+	<target name="build-ear-file" depends="build-war,prep-ear">
+		<!-- Create WAR file -->
+		<jar destfile="${build.app.dir}/${app.web.name}">
+			<fileset dir="${build.web.dir}"/>
+		</jar>
+		<antcall target="build-ear.${app-server}">
+		</antcall>
+		<replace dir="${build.app.dir}" includes="**" 
+						 token="@project-name@" value="${project.name}"/>
+		<jar destfile="${dist.dir}/${app.name}">
+			<fileset dir="${build.app.dir}"/>
+		</jar>
+	</target>
+
+	<target name="build-war.tomcat">
+		<!-- Copy context files 
+		<copy todir="${output.war.dir}">
+			<fileset dir="${config.dir}/tomcat" includes="META-INF/**"/>
+		</copy> -->
+	</target>
+
+
+	<target name="build-ejb-jar.tomcat">
+	</target>
+
+	<target name="build-ear.tomcat">
+	</target>
+
+	<target name="build-war.jboss">
+	</target>
+
+	<target name="build-ejb-jar.jboss">
+	</target>
+
+	<target name="build-ear.jboss">
+	</target>
+
+	<target name="build-war.weblogic">
+	</target>
+
+	<target name="build-ejb-jar.weblogic">
+	</target>
+
+	<target name="build-ear.weblogic">
+	</target>
+
+	<!-- Create a war file 
+	<target name="war-file">
+		<zip destfile="${output.dir}/${war.file.name}">
+			<fileset dir="${output.war.dir}"/>
+		</zip>
+	</target> 
+	<target name="web-jar-file">
+		<zip destfile="${output.dir}/${war.file.name}">
+			<fileset dir="${output.war.dir}"/>
+		</zip>
+	</target> 
+	<target name="ejb-jar-file">
+		<zip destfile="${output.dir}/${war.file.name}">
+			<fileset dir="${output.war.dir}"/>
+		</zip>
+	</target> 
+	<target name="ear-file">
+		<zip destfile="${output.dir}/${war.file.name}">
+			<fileset dir="${output.war.dir}"/>
+		</zip>
+	</target> -->
+
+	<!-- Deploy the exploded war to the application server -->
+	<target name="deploy" depends="build-ear">
+		<copy todir="${deploy.ear.path}">
+			<fileset dir="${build.app.dir}"/>
+		</copy>
+	</target>
+
+	<target name="dist.war" depends="build-war">
+		<jar destfile="${dist.war.path}">
+			<fileset dir="${build.web.dir}"/>
+		</jar>
+	</target>
+
+	<target name="dist.ear" depends="build-ear-file">
+		<jar destfile="${dist.ear.path}">
+			<fileset dir="${build.app.dir}"/>
+		</jar>
+	</target>
+
+	<target name="deploy.war" depends="dist.war">
+		<jar destfile="${deploy.war.path}">
+			<fileset dir="${build.web.dir}"/>
+		</jar>
+	</target>
+
+	<target name="deploy.ear" depends="dist.ear">
+		<jar destfile="${deploy.ear.path}">
+			<fileset dir="${build.app.dir}"/>
+		</jar>
+	</target>
+
+	<!-- Redeploy the application -->
+	<target name="redeploy">
+		<touch file="${build.app.dir}/META-INF/application.xml"/>
+		<touch file="${build.web.dir}/WEB-INF/web.xml"/>
+		<copy todir="${deploy.ear.path}">
+			<fileset file="${build.app.dir}/**"/>
+		</copy>
+	</target>
+
+	<!-- Redeploy the application -->
+	<target name="redeploy.ear">
+		<touch file="${build.app.dir}/META-INF/application.xml"/>
+		<touch file="${build.web.dir}/WEB-INF/web.xml"/>
+		<jar destfile="${deploy.ear.path}" update="true">
+			<fileset dir="${build.app.dir}"/>
+		</jar>
+	</target>
+
+	<target name="only-pages">
+		<copy todir="${deploy-temp.war.dir}">
+			<fileset dir="${web.src.dir}">
+				<include name="**/*"/>
+				<exclude name="**/*~"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Create a source distribution -->
+	<target name="src-dist">
+		<zip destfile="${project.name}-src.zip">
+			<fileset dir="." 
+				excludes="**/.svn/**,bin/**,build/**,dist/**,lib/**,**/*~,${project.name}-src.zip" />
+		</zip>
+	</target>
+
+</project>

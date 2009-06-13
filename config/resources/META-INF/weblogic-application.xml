@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<weblogic-application xmlns="http://www.bea.com/ns/weblogic/90" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <prefer-application-packages>
+	<package-name>antlr.*</package-name>
+	<package-name>org.apache.commons.*</package-name>
+	<package-name>org.apache.oro.*</package-name>
+	<package-name>oracle.*</package-name>
+  </prefer-application-packages> 
+</weblogic-application>

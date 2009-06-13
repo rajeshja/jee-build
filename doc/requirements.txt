@@ -1,0 +1,57 @@
+The application must support the following functionality
+
+1. Create Catalogs
+
+2. Maintain catalogs
+   a. Add sub-catalogs
+   b. Add SKUs to a catalog
+   c. Remove SKUs from a catalog
+   d. Rename a catalog
+
+3. Create SKUs
+
+4. Maintain SKUs
+   a. Remove SKUs
+   b. Update SKUs
+   c. Change the price of a SKU
+   d. View a SKU
+
+5. SKUs must have the following properties
+   a. Name
+   b. Price
+   c. Description
+   d. Catalogs that the SKU belongs to (one or more)
+
+6. Browse catalogs
+   a. Navigate from a catalog to its parents or children
+   b. A catalog may have multiple parents
+   c. A catalog may have multiple children
+   d. See all the SKUs in a catalog
+   e. SKU lists should be paginated
+
+7. Search
+   a. Search for a SKU by name
+   b. Search for a SKU by catalog
+   c. Search for a SKU by description
+   d. Search for a catalog by name
+
+8. Create users
+
+9. Maintain user profiles
+   a. Modify a user profile
+   b. Delete a user profile
+
+10. Add to shopping cart
+
+11. Maintain shopping cart
+   a. View the shopping cart
+   b. The contents of the shopping cart should be valid across sessions
+   c. Delete items from a shopping cart
+   d. Update the number of items of a SKU in the shopping cart
+
+12. Maintain inventory of items
+
+13. Place orders for items in the shopping cart
+
+14. Update inventory when any item has been ordered.
+
