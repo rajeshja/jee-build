@@ -5,9 +5,9 @@
              version="1.0">
 	<persistence-unit name="shoppingDB" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<jta-data-source>/jdbc/shoppingDS</jta-data-source>
+		<jta-data-source>/jdbc/j2ee</jta-data-source>
 		<properties>
-			<property name="hibernate.dialect" value="org.hibernate.dialect.OracleDialect"/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
 			<property name="hibernate.show_sql" value="true"/>
 			<property name="hibernate.cache.provider_class" value="org.hibernate.cache.HashtableCacheProvider"/>

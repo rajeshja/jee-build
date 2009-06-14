@@ -8,9 +8,13 @@
 	
 	<module>
 		<web>
-			<web-uri>@project-name@.war</web-uri>
+			<web-uri>@app.web.name@</web-uri>
 			<context-root>/@project-name@</context-root>
 		</web>
+	</module>
+
+	<module>
+		<ejb>@app.ejb-jar.name@</ejb>
 	</module>
 
 </application>

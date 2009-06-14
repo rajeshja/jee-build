@@ -92,15 +92,18 @@
 		</copy>
 		<!-- Copy EAR level resources-->
 		<copy todir="${build.app.dir}">
-			<fileset dir="${config.resources.dir}">
-				<include name="${config.app.files.include}" />
-				<exclude name="${config.app.files.exclude}" />
-				<exclude name="${config.ejb-jar.files}" />
-			</fileset>
+			<fileset dir="${config.resources.dir}"
+							 includesfile="${config.app.files.includes}"  
+							 excludesfile="${config.app.files.excludes}" />
+				<!-- exclude name="${config.ejb-jar.files}" / -->
 		</copy>
 		<manifest file="${build.app.dir}/META-INF/MANIFEST.MF"/>
 		<replace dir="${build.app.dir}" includes="**" 
-						 token="@project-name@" value="${project.name}"/>
+						 token="@project.name@" value="${project.name}"/>
+		<replace dir="${build.app.dir}" includes="**" 
+						 token="@app.web.name@" value="${app.web.name}"/>
+		<replace dir="${build.app.dir}" includes="**" 
+						 token="@app.ejb-jar.name@" value="${app.ejb-jar.name}"/>
 	</target>
 
 	<!-- Create the exploded War directory  -->
@@ -133,23 +136,21 @@
 	<target name="build-web-jar" depends="compile, prep">
 		<copy todir="${build.web-jar.dir}">
 			<!-- Copy all class files -->
-			<fileset dir="${java.compile.dir}">
-				<exclude name="${java.ejb-jar.include}"/>
-			</fileset>
+			<fileset dir="${java.compile.dir}" 
+							 excludesfile="${java.ejb-jar.includes}"/>
 			<!-- Copy all properties files required on classpath -->
-			<fileset dir="${config.resources.dir}">
-				<include name="${config.resources.web.files}" />
-			</fileset>
+			<fileset dir="${config.resources.dir}"
+							 includesfile="${config.resources.web.files.includes}" />
 		</copy>
 		<manifest file="${build.web-jar.dir}/META-INF/MANIFEST.MF"/>
 	</target>
 
 	<target name="build-ejb-jar" depends="compile, prep">
 		<!-- Copy all files required in EJB JAR -->
+		<echo message="Should be copying ejb classes now"/> 
 		<copy todir="${build.ejb-jar.dir}">
-			<fileset dir="${java.compile.dir}">
-				<include name="${java.ejb-jar.include}" />
-			</fileset>
+			<fileset dir="${java.compile.dir}"
+							 includesfile="${java.ejb-jar.includes}" />
 		</copy>
 		<manifest file="${build.ejb-jar.dir}/META-INF/MANIFEST.MF"/>
 		<antcall target="build-ejb-jar.${app-server}">
@@ -157,7 +158,7 @@
 	</target>
 
 	<!-- Create the exploded EAR directory -->
-	<target name="build-ear" depends="build-war,prep-ear">
+	<target name="build-ear" depends="build-war,build-ejb-jar,prep-ear">
 		<!-- Copy exploded WAR -->
 		<copy todir="${build.app.dir}/${app.web.name}">
 			<fileset dir="${build.web.dir}"/>
