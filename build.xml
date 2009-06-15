@@ -51,6 +51,9 @@
 
 	<!-- Initial preparations -->
 	<target name="prep">
+		<mkdir dir="${lib.web.dir}"/>
+		<mkdir dir="${lib.app.dir}"/>
+		<mkdir dir="${lib.build.dir}"/>
 		<mkdir dir="${build.dir}"/>
 		<mkdir dir="${build.app.dir}"/>
 		<mkdir dir="${build.app.dir}/META-INF"/>
