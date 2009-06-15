@@ -25,6 +25,7 @@
 	<!-- Remove the application from the container -->
 	<target name="cleanWebApp">
 		<delete dir="${deploy.ear.path}" includeEmptyDirs="true" />
+		<!-- delete file="${deploy.dir}/jboss-j2ee-ds.xml" / -->
 	</target>
 
 	<!-- Clean the build environment. (Does not undeploy the application) -->
@@ -117,7 +118,8 @@
 		</copy>
 		<!-- Copy WEB-INF files -->
 		<copy todir="${build.web.dir}/WEB-INF">
-			<fileset dir="${config.web-inf.dir}"/>
+			<fileset dir="${config.web-inf.dir}"
+							 excludesfile="${config.web-inf.excludes}" />
 		</copy>
 		<!-- Copy all jars required on WAR classpath -->
 		<copy todir="${build.web-lib.dir}">
@@ -125,10 +127,9 @@
 		</copy>
 		<copy todir="${build.web.dir}/WEB-INF/classes">
 			<fileset dir="${build.web-jar.dir}"/>
-			<fileset dir="${config.resources.dir}">
-				<include name="${config.web.files.include}" />
-				<exclude name="${config.web.files.exclude}" />
-			</fileset>
+			<fileset dir="${config.resources.dir}"
+							 includesfile="${config.web.files.includes}"
+							 excludesfile="${config.web.files.excludes}" />
 		</copy>
 		<antcall target="build-war.${app-server}">
 		</antcall>
@@ -143,14 +144,14 @@
 							 excludesfile="${java.ejb-jar.includes}"/>
 			<!-- Copy all properties files required on classpath -->
 			<fileset dir="${config.resources.dir}"
-							 includesfile="${config.resources.web.files.includes}" />
+							 includesfile="${config.resources.web.files.includes}"
+							 excludesfile="${config.resources.web.files.excludes}" />
 		</copy>
 		<manifest file="${build.web-jar.dir}/META-INF/MANIFEST.MF"/>
 	</target>
 
 	<target name="build-ejb-jar" depends="compile, prep">
 		<!-- Copy all files required in EJB JAR -->
-		<echo message="Should be copying ejb classes now"/> 
 		<copy todir="${build.ejb-jar.dir}">
 			<fileset dir="${java.compile.dir}"
 							 includesfile="${java.ejb-jar.includes}" />
@@ -166,6 +167,9 @@
 		<copy todir="${build.app.dir}/${app.web.name}">
 			<fileset dir="${build.web.dir}"/>
 		</copy>
+		<jar destfile="${build.app.dir}/${app.ejb-jar.name}">
+			<fileset dir="${build.ejb-jar.dir}"/>
+		</jar>
 		<antcall target="build-ear.${app-server}">
 		</antcall>
 		<replace dir="${build.app.dir}" includes="**" 
@@ -251,25 +255,43 @@
 	<target name="dist.war" depends="build-war">
 		<jar destfile="${dist.war.path}">
 			<fileset dir="${build.web.dir}"/>
+			<fileset dir="${config.server.dir}"/>
 		</jar>
 	</target>
 
-	<target name="dist.ear" depends="build-ear-file">
+	<target name="dist.ear" depends="build-ear">
+		<copy todir="${dist.ear.path}">
+			<fileset dir="${build.app.dir}"/>
+		</copy>
+		<copy todir="${dist.dir}">
+			<fileset dir="${config.server.dir}"/>
+		</copy>
+	</target>
+
+	<!-- target name="dist.war-file" depends="build-war-file">
+		<jar destfile="${dist.war.path}">
+			<fileset dir="${build.web.dir}"/>
+			<fileset dir="${config.server.dir}"/>
+		</jar>
+	</target -->
+
+	<target name="dist.ear-file" depends="build-ear-file">
 		<jar destfile="${dist.ear.path}">
 			<fileset dir="${build.app.dir}"/>
+			<fileset dir="${config.server.dir}"/>
 		</jar>
 	</target>
 
 	<target name="deploy.war" depends="dist.war">
 		<jar destfile="${deploy.war.path}">
-			<fileset dir="${build.web.dir}"/>
+			<fileset dir="${dist.war.path}"/>
 		</jar>
 	</target>
 
 	<target name="deploy.ear" depends="dist.ear">
-		<jar destfile="${deploy.ear.path}">
-			<fileset dir="${build.app.dir}"/>
-		</jar>
+		<copy todir="${deploy.dir}">
+			<fileset dir="${dist.dir}"/>
+		</copy>
 	</target>
 
 	<!-- Redeploy the application -->
@@ -282,12 +304,12 @@
 	</target>
 
 	<!-- Redeploy the application -->
-	<target name="redeploy.ear">
+	<target name="redeploy.ear" depends="deploy.ear">
 		<touch file="${build.app.dir}/META-INF/application.xml"/>
 		<touch file="${build.web.dir}/WEB-INF/web.xml"/>
-		<jar destfile="${deploy.ear.path}" update="true">
+		<!-- jar destfile="${deploy.ear.path}" update="true">
 			<fileset dir="${build.app.dir}"/>
-		</jar>
+		</jar -->
 	</target>
 
 	<target name="only-pages">
