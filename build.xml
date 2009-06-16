@@ -99,7 +99,6 @@
 			<fileset dir="${config.resources.dir}"
 							 includesfile="${config.app.files.includes}"  
 							 excludesfile="${config.app.files.excludes}" />
-				<!-- exclude name="${config.ejb-jar.files}" / -->
 		</copy>
 		<manifest file="${build.app.dir}/META-INF/MANIFEST.MF"/>
 		<replace dir="${build.app.dir}" includes="**" 
@@ -108,6 +107,8 @@
 						 token="@app.web.name@" value="${app.web.name}"/>
 		<replace dir="${build.app.dir}" includes="**" 
 						 token="@app.ejb-jar.name@" value="${app.ejb-jar.name}"/>
+		<replace dir="${build.app.dir}" includes="**" 
+						 token="@app.web-jar.name@" value="${app.web-jar.name}"/>
 	</target>
 
 	<!-- Create the exploded War directory  -->
@@ -126,11 +127,13 @@
 			<fileset dir="${lib.web.dir}"/>
 		</copy>
 		<copy todir="${build.web.dir}/WEB-INF/classes">
-			<fileset dir="${build.web-jar.dir}"/>
 			<fileset dir="${config.resources.dir}"
-							 includesfile="${config.web.files.includes}"
-							 excludesfile="${config.web.files.excludes}" />
+							 includesfile="${config.web-classes.files.includes}"
+							 excludesfile="${config.web-classes.files.excludes}" />
 		</copy>
+		<jar destfile="${build.web.dir}/WEB-INF/lib/${app.web-jar.name}">
+			<fileset dir="${build.web-jar.dir}"/>
+		</jar>
 		<antcall target="build-war.${app-server}">
 		</antcall>
 		<replace dir="${build.web.dir}" includes="**" 
@@ -155,10 +158,25 @@
 		<copy todir="${build.ejb-jar.dir}">
 			<fileset dir="${java.compile.dir}"
 							 includesfile="${java.ejb-jar.includes}" />
+			<fileset dir="${config.resources.dir}"
+							 includesfile="${config.ejb-jar.files.includes}"
+							 excludesfile="${config.ejb-jar.files.excludes}" />
 		</copy>
 		<manifest file="${build.ejb-jar.dir}/META-INF/MANIFEST.MF"/>
 		<antcall target="build-ejb-jar.${app-server}">
 		</antcall>
+	</target>
+
+	<target name="build-app-jar" depends="compile, prep">
+		<!-- Copy all files required in EJB JAR -->
+		<copy todir="${build.app-jar.dir}">
+			<fileset dir="${java.compile.dir}"
+							 includesfile="${java.app-jar.includes}" />
+			<fileset dir="${config.resources.dir}"
+							 includesfile="${config.app-jar.files.includes}"
+							 excludesfile="${config.app-jar.files.excludes}" />
+		</copy>
+		<manifest file="${build.app-jar.dir}/META-INF/MANIFEST.MF"/>
 	</target>
 
 	<!-- Create the exploded EAR directory -->

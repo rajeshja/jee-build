@@ -4,6 +4,7 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" 
              version="1.0">
 	<persistence-unit name="j2eeDB">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<jta-data-source>java:/j2ee</jta-data-source>
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>

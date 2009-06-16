@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import rja.bean.Calculator;
+import rja.bean.ItemManager;
 import rja.entities.Item;
 
 
@@ -30,11 +31,11 @@ import rja.entities.Item;
  */
 public class InsertItemServlet extends HttpServlet {
 
-	@PersistenceUnit(unitName="j2eeDB")
-	private EntityManagerFactory emf;
-
 	@EJB
 	private Calculator calculator;
+
+	@EJB
+	private ItemManager itemManager;
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 		throws ServletException, IOException {
@@ -42,15 +43,13 @@ public class InsertItemServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.print("<html><head><title>InsertItem</title></head><body>");
 
-		EntityManager em = emf.createEntityManager();
-
 		Item item = new Item();
 		item.setName("Item " + (int)(Math.random()*100));
 		item.setDescription("Random description");
 		item.setCreatedDate(new Date());
 		item.setPrice(new BigDecimal(100.0));
 		
-		em.persist(item);
+		itemManager.insert(item);
 		
 		out.print("Just attempted to create an item - " 
 				  + item.getName() + ", "
@@ -59,8 +58,7 @@ public class InsertItemServlet extends HttpServlet {
 				  + item.getPrice() + "<br/>");
 		out.println();
 
-		Query query = em.createQuery("from Item");
-		List<Item> items = query.getResultList();
+		List<Item> items = itemManager.findAllItems();
 		
 		if (items!=null) {
 			out.print("The query returned " + items.size() + " rows.<br/>");
