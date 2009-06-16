@@ -79,6 +79,7 @@
 					 debug="on"
 					 deprecation="on"
 					 target="${java.compile.target}">
+			<compilerarg value="-Xlint:unchecked" />
 			<include name="**/*.java"/>
 			<classpath refid="project.class.path"/>
 		</javac>
@@ -147,8 +148,8 @@
 							 excludesfile="${java.ejb-jar.includes}"/>
 			<!-- Copy all properties files required on classpath -->
 			<fileset dir="${config.resources.dir}"
-							 includesfile="${config.resources.web.files.includes}"
-							 excludesfile="${config.resources.web.files.excludes}" />
+							 includesfile="${config.web.files.includes}"
+							 excludesfile="${config.web.files.excludes}" />
 		</copy>
 		<manifest file="${build.web-jar.dir}/META-INF/MANIFEST.MF"/>
 	</target>
