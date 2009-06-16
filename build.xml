@@ -145,7 +145,8 @@
 		<copy todir="${build.web-jar.dir}">
 			<!-- Copy all class files -->
 			<fileset dir="${java.compile.dir}" 
-							 excludesfile="${java.ejb-jar.includes}"/>
+							 includesfile="${java.web-jar.includes}"
+							 excludesfile="${java.web-jar.excludes}" />
 			<!-- Copy all properties files required on classpath -->
 			<fileset dir="${config.resources.dir}"
 							 includesfile="${config.web.files.includes}"
@@ -181,13 +182,16 @@
 	</target>
 
 	<!-- Create the exploded EAR directory -->
-	<target name="build-ear" depends="build-war,build-ejb-jar,prep-ear">
+	<target name="build-ear" depends="build-war,build-app-jar,build-ejb-jar,prep-ear">
 		<!-- Copy exploded WAR -->
 		<copy todir="${build.app.dir}/${app.web.name}">
 			<fileset dir="${build.web.dir}"/>
 		</copy>
 		<jar destfile="${build.app.dir}/${app.ejb-jar.name}">
 			<fileset dir="${build.ejb-jar.dir}"/>
+		</jar>
+		<jar destfile="${build.app.dir}/${app.lib.dir}/${app.app-jar.name}">
+			<fileset dir="${build.app-jar.dir}"/>
 		</jar>
 		<antcall target="build-ear.${app-server}">
 		</antcall>
