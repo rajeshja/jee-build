@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datasources>
    <local-tx-datasource>
-      <jndi-name>j2ee</jndi-name>
+      <jndi-name>jdbc/j2ee</jndi-name>
 
       <connection-url>jdbc:hsqldb:mem:j2ee</connection-url>
 

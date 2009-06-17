@@ -5,7 +5,7 @@
              version="1.0">
 	<persistence-unit name="j2eeDB">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<jta-data-source>java:/j2ee</jta-data-source>
+		<jta-data-source>java:/jdbc/j2ee</jta-data-source>
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
