@@ -5,6 +5,7 @@
 	<!-- Tell ant to use my environment variables -->
 	<property environment="env"/>
 
+	<property file="./local.properties"/>
 	<property file="./build.properties"/>
 	<property file="./${app-server}.properties"/>
 
