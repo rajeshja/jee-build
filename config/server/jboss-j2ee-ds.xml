@@ -3,14 +3,14 @@
    <local-tx-datasource>
       <jndi-name>j2ee</jndi-name>
 
-      <connection-url>jdbc:mysql://localhost/jee</connection-url>
+      <connection-url>jdbc:hsqldb:mem:j2ee</connection-url>
 
       <!-- The driver class -->
-			<driver-class>com.mysql.jdbc.Driver</driver-class>
+			<driver-class>org.hsqldb.jdbcDriver</driver-class>
 
       <!-- The login and password -->
-      <user-name>java</user-name>
-      <password>java</password>
+      <user-name>sa</user-name>
+      <password></password>
 
       <min-pool-size>5</min-pool-size>
 
