@@ -349,7 +349,7 @@
 	<target name="src-dist">
 		<zip destfile="${project.name}-src.zip">
 			<fileset dir="." 
-				excludes="**/.svn/**,bin/**,build/**,dist/**,lib/**,**/*~,${project.name}-src.zip" />
+				excludes=".git/,**/.svn/**,bin/**,build/**,dist/**,**/*~,${project.name}-src.zip" />
 		</zip>
 	</target>
 
