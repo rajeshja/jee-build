@@ -52,6 +52,12 @@ public class InsertItemServlet extends HttpServlet {
 		request.setAttribute("sum", calculator.add(2,3));
 		request.setAttribute("difference", calculator.subtract(5,2));
 
+//		if (request.getSession(false) == null) {
+//			request.setAttribute("sessionExists",Boolean.FALSE);
+//		} else {
+//			request.setAttribute("sessionExists",Boolean.TRUE);
+//		}
+
 		request.getRequestDispatcher("item-list.jsp").forward(request, response);
 
 		

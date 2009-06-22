@@ -22,6 +22,8 @@
 	<br/>
 	Sum of 2 and 3 is ${requestScope.sum}. <br/>
 	Difference of 5 and 2 is ${requestScope.difference}. <br/>
+	<br/>
+	Does the session exist? <c:out value="${requestScope.sessionExists}"/> <br/>
 
 </body>
 </html>
