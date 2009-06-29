@@ -8,12 +8,35 @@
 		<servlet-name>Insert Item Servlet</servlet-name>
 		<servlet-class>rja.servlet.InsertItemServlet</servlet-class>
 	</servlet>
-    
+	
 	<servlet-mapping>
 		<servlet-name>Insert Item Servlet</servlet-name>
 		<url-pattern>/InsertItem</url-pattern>
 	</servlet-mapping>     
-    
-    <!-- Faces Servlet -->  
-      
+	
+	<security-constraint>
+		<display-name>SecurityConstraint</display-name>
+		<web-resource-collection>
+			<web-resource-name>ProtectedPages</web-resource-name>
+			<url-pattern>/protected/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>loginUser</role-name>
+		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<realm-name>Test App Realm</realm-name>
+		<form-login-config>
+			<form-login-page>/logon.jsp</form-login-page>
+			<form-error-page>/logonError.jsp</form-error-page>
+		</form-login-config>
+	</login-config>
+	<security-role>
+		<role-name>loginUser</role-name>
+	</security-role>
+
 </web-app>
