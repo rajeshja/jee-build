@@ -1,12 +1,15 @@
 package rja.bean;
 
 import java.util.List;
+import javax.annotation.security.DenyAll;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
 
 import rja.entities.Item;
 
@@ -23,12 +26,17 @@ import rja.entities.Item;
 @Local(rja.bean.ItemManager.class)
 public class ItemManagerBean implements ItemManager {
 
+	@Resource
+	private SessionContext ctx;
+
 	@PersistenceUnit(unitName="j2eeDB")
 	private EntityManagerFactory emf;
 
+	@DenyAll
 	public void insert(Item item) {
 
 		EntityManager em = emf.createEntityManager();
+		item.setDescription("set by " + ctx.getCallerPrincipal());
 		em.persist(item);
 
 	}
