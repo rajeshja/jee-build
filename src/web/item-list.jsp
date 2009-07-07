@@ -17,7 +17,7 @@
 		The query returned ${requestScope.items.size} items.<br/>
 	</c:if>
 	<c:forEach var="item" items="${requestScope.items}">
-		Item: ${item.name} <br/>
+		Item: ${item.name} : ${item.description} <br/>
 	</c:forEach>
 	<br/>
 	Sum of 2 and 3 is ${requestScope.sum}. <br/>
