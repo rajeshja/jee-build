@@ -1,0 +1,13 @@
+<?xml version='1.0'?>
+<policy>
+  <application-policy name="custom-apps">
+    <authentication>
+      <login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule"
+        flag="required">
+        <module-option name="usersProperties">props/custom-apps-users.properties</module-option>
+        <module-option name="rolesProperties">props/custom-apps-roles.properties</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+</policy>
+
