@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ejb.EJBAccessException;
 
 import rja.bean.Calculator;
 import rja.bean.ItemManager;
@@ -16,13 +17,7 @@ import rja.entities.Item;
 
 
 /**
- * Describe class InsertItemServlet here.
- *
- *
- * Created: Mon Jun 15 00:46:17 2009
- *
- * @author <a href="mailto:rajeshja@rja-desktop-lnx">Rajesh</a>
- * @version 1.0
+ * Servlet to insert Items into the database and retrieve new list.
  */
 public class InsertItemServlet extends HttpServlet {
 
@@ -40,17 +35,33 @@ public class InsertItemServlet extends HttpServlet {
 		item.setDescription("Random description");
 		item.setCreatedDate(new Date());
 		item.setPrice(new BigDecimal(100.0));
+
+		String errors = "";
 		
-		itemManager.insert(item);
+		try {
+			itemManager.insert(item);
+		} catch (EJBAccessException e) {
+			errors += "Current user does not have privileges to insert items.\n";
+		}
 
 		request.setAttribute("itemInserted", item);
 		
-		List<Item> items = itemManager.findAllItems();
+		try {
+			List<Item> items = itemManager.findAllItems();
+			request.setAttribute("items", items);
+		} catch (EJBAccessException e) {
+			errors += "Current user does not have privileges to find items.\n";
+		}
 
-		request.setAttribute("items", items);
+		try {
+			request.setAttribute("sum", calculator.add(2,3));
+			request.setAttribute("difference", calculator.subtract(5,2));
+		} catch (EJBAccessException e) {
+			errors += "Current user does not have privileges to calculate.\n";
+			e.printStackTrace();
+		}
 
-		request.setAttribute("sum", calculator.add(2,3));
-		request.setAttribute("difference", calculator.subtract(5,2));
+		request.setAttribute("errors", errors);
 
 //		if (request.getSession(false) == null) {
 //			request.setAttribute("sessionExists",Boolean.FALSE);
@@ -59,8 +70,6 @@ public class InsertItemServlet extends HttpServlet {
 //		}
 
 		request.getRequestDispatcher("item-list.jsp").forward(request, response);
-
-		
 		
 	}
 

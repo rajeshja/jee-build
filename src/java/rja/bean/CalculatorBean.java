@@ -1,5 +1,6 @@
 package rja.bean;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 
@@ -11,14 +12,17 @@ import javax.ejb.Stateless;
  *
  * @version 1.0
  */
+@PermitAll
 @Stateless
 @Local(rja.bean.Calculator.class)
 public class CalculatorBean implements Calculator {
 
+	@PermitAll
 	public int add(int a, int b) {
 		return a + b;
 	}
 
+	@PermitAll
 	public int subtract(int a, int b) {
 		return a - b;
 	}

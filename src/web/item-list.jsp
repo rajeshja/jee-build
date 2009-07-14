@@ -2,9 +2,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>Items Page</title>
+	<style>
+		.errors {
+			color: red;
+		}
+	</style>
 </head>
 <body>
 	<h1>Items Page</h1>
+	<div class="errors">
+		<c:out value="${requestScope.errors}"/>
+	</div>
 	<c:if test="${empty requestScope.itemInserted}" >
 		Just attempted to create an item - 
 		${requestScope.itemInserted.name}, 
@@ -24,6 +32,8 @@
 	Difference of 5 and 2 is ${requestScope.difference}. <br/>
 	<br/>
 	Does the session exist? <c:out value="${requestScope.sessionExists}"/> <br/>
+
+	<a href="<%= request.getContextPath() %>/protected/p1.jsp">Protected page</a>.
 
 </body>
 </html>

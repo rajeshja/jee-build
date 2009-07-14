@@ -1,15 +1,16 @@
 package rja.bean;
 
 import java.util.List;
-import javax.annotation.security.DenyAll;
+import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Local;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
 
 import rja.entities.Item;
 
@@ -22,6 +23,7 @@ import rja.entities.Item;
  * @author <a href="mailto:rajeshja@GDYLPT13432"></a>
  * @version 1.0
  */
+@PermitAll
 @Stateless
 @Local(rja.bean.ItemManager.class)
 public class ItemManagerBean implements ItemManager {
@@ -32,7 +34,7 @@ public class ItemManagerBean implements ItemManager {
 	@PersistenceUnit(unitName="j2eeDB")
 	private EntityManagerFactory emf;
 
-	@DenyAll
+	@RolesAllowed("loginUser")
 	public void insert(Item item) {
 
 		EntityManager em = emf.createEntityManager();
