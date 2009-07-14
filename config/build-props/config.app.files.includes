@@ -1,1 +1,2 @@
-META-INF/*application.xml
+META-INF/application.xml
+META-INF/jboss-app.xml
